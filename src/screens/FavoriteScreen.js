@@ -17,76 +17,99 @@ import {
 export default function FavoriteScreen() {
   const navigation = useNavigation();
 
-  // Fetch favorite recipes from Redux store
+  // Assuming you have a similar structure for recipes in your Redux store
   const favoriteRecipes = useSelector((state) => state.favorites);
   const favoriteRecipesList = favoriteRecipes?.favoriterecipes || [];
-  // console.log('favoriteRecipes', favoriteRecipes.favoriterecipes);
-  // console.log('favoriteRecipesList', favoriteRecipesList);
+  console.log(favoriteRecipes.favoriterecipes);
+  console.log('favoriteRecipesList',favoriteRecipesList);
+  
+  
 
   if (favoriteRecipesList.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>No favorite recipes yet!</Text>
+        {/* add back button */}
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
+          style={{
+            backgroundColor: "#2563EB",
+            padding: 10,
+            borderRadius: 5,
+            marginTop: 10,
+            width: 100,
+            alignItems: "center ",
+          }}
         >
-          <Text style={styles.backButtonText}>Go back</Text>
+          <Text style={{ color: "#fff" }}>Go back</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.cardContainer}
-      onPress={() => navigation.navigate("RecipeDetail", { recipe: item })}
-    >
-      <Image
-        source={{ uri: item.recipeImage }}
-        style={styles.recipeImage}
-        onError={(error) => console.log('Image load error:', error.nativeEvent.error)}
-      />
-      <Text style={styles.recipeTitle}>
-        {item.recipeName.length > 20 ? `${item.recipeName.slice(0, 20)}...` : item.recipeName}
-      </Text>
-    </TouchableOpacity>
-  );
+
+  //add
+  const renderRecipeItem = ({ item }) => {
+    // Limite le titre à 20 caractères avec '...' si trop long
+    const truncatedTitle =
+      item.recipeName && item.recipeName.length > 20
+        ? item.recipeName.substring(0, 20) + "..."
+        : item.recipeName;
+
+    return (
+      <TouchableOpacity
+        style={styles.cardContainer}
+        onPress={() => navigation.navigate("RecipeDetail", { recipe: item })}
+      >
+        <Image
+          source={{ uri: item.recipeImage }}
+          style={styles.recipeImage}
+          resizeMode="cover"
+        />
+        <Text style={styles.recipeTitle}>{truncatedTitle}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <View style={styles.container}>
+    <>
       {/* Heading */}
       <View testID="FavoriteRecipes">
-        <Text style={styles.headerText}>
+        <Text
+          style={{ fontSize: hp(3.8), marginTop: hp(4), marginLeft: 20 }}
+          className="font-semibold text-neutral-600"
+        >
           My Favorite Recipes
         </Text>
       </View>
-
-      {/* Go Back Button */}
+    
       <TouchableOpacity
         onPress={() => navigation.goBack()}
-        style={styles.backButton}
+        style={{
+          backgroundColor: "#2563EB",
+          padding: 10,
+          borderRadius: 5,
+          marginTop: 10,
+          width: 100,
+          alignItems: "center",
+          marginLeft: 20,
+        }}
       >
-        <Text style={styles.backButtonText}>Go back</Text>
+        <Text style={{ color: "#fff" }}>Go back</Text>
       </TouchableOpacity>
 
-      {/* Favorite Recipes List */}
       <FlatList
         data={favoriteRecipesList}
-        keyExtractor={(item) => item.idFood}
-        renderItem={renderItem}
+        keyExtractor={(item) => item.idFood} // Ici on suppose que l'id s'appelle idMeal (adapter selon ta donnée)
+        renderItem={renderRecipeItem}
         contentContainerStyle={styles.listContentContainer}
-        showsVerticalScrollIndicator={false}
       />
-    </View>
+    
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
@@ -95,27 +118,6 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: hp(2.5),
     color: "#6B7280", // text-neutral-600
-  },
-  headerText: {
-    fontSize: hp(3.8),
-    fontWeight: "600",
-    color: "#4B5563", // text-neutral-600
-    marginTop: hp(4),
-    marginLeft: wp(5),
-  },
-  backButton: {
-    backgroundColor: "#2563EB",
-    padding: 10,
-    borderRadius: 5,
-    marginTop: hp(2),
-    width: 100,
-    alignItems: "center",
-    marginLeft: wp(5),
-  },
-  backButtonText: {
-    color: "#fff",
-    fontSize: hp(1.8),
-    fontWeight: "600",
   },
   listContentContainer: {
     paddingHorizontal: wp(4),
@@ -144,6 +146,5 @@ const styles = StyleSheet.create({
     fontSize: hp(2),
     fontWeight: "bold",
     color: "#4B5563", // text-neutral-700
-    flex: 1,
   },
 });

@@ -1,10 +1,7 @@
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View,Text,TextInput,TouchableOpacity,Image,StyleSheet,} from "react-native";
 import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+import {widthPercentageToDP as wp,heightPercentageToDP as hp,} from "react-native-responsive-screen";
 
 export default function RecipesFormScreen({ route, navigation }) {
   const { recipeToEdit, recipeIndex, onrecipeEdited } = route.params || {};
@@ -15,38 +12,41 @@ export default function RecipesFormScreen({ route, navigation }) {
   );
 
   const saverecipe = async () => {
+    
+    const newrecipe = {
+      title,
+      image,
+      description,
+    };
+  
     try {
-      // Initialize new recipe object
-      const newrecipe = {
-        title,
-        image,
-        description,
-      };
-
-      // Retrieve existing recipes from AsyncStorage
+      // Récupérer les recettes existantes depuis AsyncStorage
       const storedRecipes = await AsyncStorage.getItem("customrecipes");
       let recipes = storedRecipes ? JSON.parse(storedRecipes) : [];
-
-      if (recipeToEdit && recipeIndex !== undefined) {
-        // Editing an existing recipe
+  
+      if (recipeToEdit && typeof recipeIndex === "number") {
+        // Modification d'une recette existante
         recipes[recipeIndex] = newrecipe;
-        if (onrecipeEdited) {
+  
+        // Notifier le composant parent que la recette a été modifiée
+        if (typeof onrecipeEdited === "function") {
           onrecipeEdited(newrecipe, recipeIndex);
         }
       } else {
-        // Adding a new recipe
+        // Ajout d'une nouvelle recette
         recipes.push(newrecipe);
       }
-
-      // Save updated recipes array to AsyncStorage
+  
+      // Sauvegarder le tableau mis à jour dans AsyncStorage
       await AsyncStorage.setItem("customrecipes", JSON.stringify(recipes));
-
-      // Navigate back
+  
+      // Revenir à l'écran précédent
       navigation.goBack();
     } catch (error) {
-      console.error("Error saving recipe:", error);
+      console.error("Erreur lors de la sauvegarde de la recette :", error);
     }
   };
+  
 
   return (
     <View style={styles.container}>
@@ -91,12 +91,12 @@ const styles = StyleSheet.create({
     marginTop: hp(4),
     borderWidth: 1,
     borderColor: "#ddd",
-    padding: wp(0.5),
+    padding: wp(.5),
     marginVertical: hp(1),
   },
   image: {
     width: 300,
-    height: 200,
+    height:200,
     margin: wp(2),
   },
   imagePlaceholder: {
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: "#4F75FF",
-    padding: wp(0.5),
+    padding: wp(.5),
     alignItems: "center",
     borderRadius: 5,
     marginTop: hp(2),
